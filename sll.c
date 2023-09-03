@@ -246,7 +246,7 @@ void insert_pos(int data)
     {
         newnode->data=data;
         temp=head;
-        for(i=0;i<pos-1;i++)
+        for(i=1;i<pos-1;i++)
         {
             temp=temp->next;
             if(temp==NULL)
@@ -441,41 +441,42 @@ int getnode(struct node*head,int index)
     return -1;
     //printf(" %d",current->data);
 }
-int detectandremov(struct node*head)
+int detectandremov()
 {
-    struct node*slow=head,*fast=head;
-    while(slow&&fast&&fast->next)
-    {
-        slow=slow->next;
-        fast=fast->next->next;
-        if(slow==fast)
-        {
-            removeloop(slow,head);
-            printf("cycle detected");
+    struct node* slow = head;
+    struct node* fast = head;
+    struct node* prev = NULL;
+
+    while (slow && fast && fast->next) {
+        prev = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+
+        if (slow == fast) {
+            // Cycle detected. Remove the loop.
+            removeloop(prev);
+            printf("Cycle detected and removed.\n");
             return 1;
         }
     }
-    printf("No cycle detected");
+
+    printf("No cycle detected.\n");
     return 0;
 }
-void removeloop(struct node *loop_node,struct node*head)
-{
-    struct node*p1,*p2;
-    p1=head;
-    while(1)
-    {
-        p2=loop_node;
-        while(p2->next!=loop_node&&p2 ->next!=p1)
-        {
-            p2=p2->next;
-        }
-        if(p2->next==p1)
-        break;
-        p1=p1->next;
+
+void removeloop(struct node* prev) {
+    struct node* start = head;
+    struct node* loop = prev->next;
+
+    while (start != loop) {
+        start = start->next;
+        prev = loop;
+        loop = loop->next;
     }
-    p2->next=NULL;
-    
+
+    prev->next = NULL;
 }
+
 int getend(struct node *head,int pos)
 {
     int len=0,i;
